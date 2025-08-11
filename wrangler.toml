@@ -1,0 +1,9 @@
+name = "deepseek-ai-worker"
+main = "worker/src/index.js"
+compatibility_date = "2023-08-01"
+
+[vars]
+DEEPSEEK_API_URL = "https://api.deepseek.com"
+
+# Add your DeepSeek API key as a secret:
+# wrangler secret put DEEPSEEK_API_KEY
