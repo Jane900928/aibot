@@ -52,6 +52,9 @@ const resolvers = {
         });
 
         if (!response.ok) {
+          console.error(`DeepSeek API error: ${response.status} ${response.statusText}`);
+          const errorText = await response.text();
+          console.error('DeepSeek API error details:', errorText);
           throw new Error(`DeepSeek API error: ${response.status}`);
         }
 
@@ -77,25 +80,31 @@ const resolvers = {
   },
 };
 
-// Simple GraphQL executor
+// Simple GraphQL executor with better error handling
 async function executeGraphQL(query, variables, context) {
-  // This is a simplified GraphQL executor
-  // In production, you'd use a proper GraphQL library
-  
-  if (query.includes('mutation sendMessage')) {
-    const messageMatch = variables?.input?.message;
-    const conversationId = variables?.input?.conversationId;
+  try {
+    console.log('Received GraphQL request:', { query, variables });
     
-    if (messageMatch) {
-      return await resolvers.Mutation.sendMessage(null, { input: { message: messageMatch, conversationId } }, context);
+    // Handle hello query
+    if (query.includes('hello') && query.includes('query')) {
+      return { hello: resolvers.Query.hello() };
     }
+    
+    // Handle sendMessage mutation
+    if (query.includes('sendMessage') && query.includes('mutation')) {
+      if (!variables?.input?.message) {
+        throw new Error('Message is required');
+      }
+      
+      const result = await resolvers.Mutation.sendMessage(null, { input: variables.input }, context);
+      return { sendMessage: result };
+    }
+    
+    throw new Error('Unsupported GraphQL operation');
+  } catch (error) {
+    console.error('GraphQL execution error:', error);
+    throw error;
   }
-  
-  if (query.includes('query') && query.includes('hello')) {
-    return { hello: resolvers.Query.hello() };
-  }
-  
-  throw new Error('Query not supported');
 }
 
 // Utility function to generate IDs
@@ -122,11 +131,80 @@ export default {
     }
 
     const url = new URL(request.url);
+    console.log(`${request.method} ${url.pathname}`);
 
     // GraphQL endpoint
     if (url.pathname === '/graphql' && request.method === 'POST') {
       try {
-        const { query, variables } = await request.json();
+        // Check content type
+        const contentType = request.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          return new Response(
+            JSON.stringify({ 
+              errors: [{ message: 'Content-Type must be application/json' }] 
+            }), 
+            {
+              status: 400,
+              headers: {
+                'Content-Type': 'application/json',
+                ...corsHeaders,
+              },
+            }
+          );
+        }
+
+        const body = await request.text();
+        console.log('Request body:', body);
+
+        if (!body) {
+          return new Response(
+            JSON.stringify({ 
+              errors: [{ message: 'Request body is empty' }] 
+            }), 
+            {
+              status: 400,
+              headers: {
+                'Content-Type': 'application/json',
+                ...corsHeaders,
+              },
+            }
+          );
+        }
+
+        let requestData;
+        try {
+          requestData = JSON.parse(body);
+        } catch (parseError) {
+          return new Response(
+            JSON.stringify({ 
+              errors: [{ message: 'Invalid JSON in request body' }] 
+            }), 
+            {
+              status: 400,
+              headers: {
+                'Content-Type': 'application/json',
+                ...corsHeaders,
+              },
+            }
+          );
+        }
+
+        const { query, variables } = requestData;
+        
+        if (!query) {
+          return new Response(
+            JSON.stringify({ 
+              errors: [{ message: 'GraphQL query is required' }] 
+            }), 
+            {
+              status: 400,
+              headers: {
+                'Content-Type': 'application/json',
+                ...corsHeaders,
+              },
+            }
+          );
+        }
         
         const context = { env };
         const result = await executeGraphQL(query, variables, context);
@@ -138,9 +216,10 @@ export default {
           },
         });
       } catch (error) {
+        console.error('GraphQL endpoint error:', error);
         return new Response(
           JSON.stringify({ 
-            errors: [{ message: error.message }] 
+            errors: [{ message: error.message || 'Internal server error' }] 
           }), 
           {
             status: 400,
@@ -155,7 +234,14 @@ export default {
 
     // Health check endpoint
     if (url.pathname === '/health') {
-      return new Response(JSON.stringify({ status: 'ok' }), {
+      return new Response(JSON.stringify({ 
+        status: 'ok', 
+        timestamp: new Date().toISOString(),
+        environment: {
+          hasDeepSeekUrl: !!env.DEEPSEEK_API_URL,
+          hasApiKey: !!env.DEEPSEEK_API_KEY
+        }
+      }), {
         headers: {
           'Content-Type': 'application/json',
           ...corsHeaders,
@@ -164,7 +250,7 @@ export default {
     }
 
     // Default response
-    return new Response('DeepSeek AI Chat Worker', {
+    return new Response('DeepSeek AI Chat Worker - Use /graphql endpoint for GraphQL queries', {
       headers: corsHeaders,
     });
   },
