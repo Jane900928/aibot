@@ -2,10 +2,9 @@
 
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client'
 
-// 直接使用 Worker 的完整 URL
-// 部署时请替换为你的实际 Worker URL
+// 优先使用环境变量，如果没有则使用自定义域名
 const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT || 
-  'https://deepseek-ai-worker.konglin928.workers.dev/graphql'
+  'https://api.yourdomain.com/graphql' // 替换为你的自定义域名
 
 const client = new ApolloClient({
   uri: GRAPHQL_ENDPOINT,
