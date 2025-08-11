@@ -11,7 +11,7 @@ const nextConfig = {
     return [
       {
         source: '/api/graphql',
-        destination: 'https://deepseek-ai-worker.your-subdomain.workers.dev/graphql', // 替换为你的 Worker URL
+        destination: 'https://deepseek-ai-worker.konglin928.workers.dev/graphql', // 替换为你的 Worker URL
       },
     ];
   },
