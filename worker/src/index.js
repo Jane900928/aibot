@@ -2,6 +2,7 @@
 const typeDefs = `
   type Query {
     hello: String
+    testDeepSeek: TestResult
   }
 
   type Mutation {
@@ -19,18 +20,99 @@ const typeDefs = `
     timestamp: String!
     conversationId: String!
   }
+
+  type TestResult {
+    success: Boolean!
+    message: String!
+    details: String
+  }
 `;
+
+// Test DeepSeek API connection
+async function testDeepSeekAPI(env) {
+  try {
+    console.log('Testing DeepSeek API connection...');
+    console.log('API URL:', env.DEEPSEEK_API_URL);
+    console.log('Has API Key:', !!env.DEEPSEEK_API_KEY);
+    
+    if (!env.DEEPSEEK_API_KEY) {
+      return {
+        success: false,
+        message: 'DeepSeek API key is not configured',
+        details: 'Please set DEEPSEEK_API_KEY using: wrangler secret put DEEPSEEK_API_KEY'
+      };
+    }
+
+    const response = await fetch(`${env.DEEPSEEK_API_URL}/v1/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${env.DEEPSEEK_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [
+          {
+            role: 'user',
+            content: 'Hello, this is a test message.',
+          },
+        ],
+        max_tokens: 50,
+        temperature: 0.7,
+      }),
+    });
+
+    console.log('DeepSeek API response status:', response.status);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('DeepSeek API error response:', errorText);
+      
+      return {
+        success: false,
+        message: `DeepSeek API returned ${response.status}: ${response.statusText}`,
+        details: errorText
+      };
+    }
+
+    const data = await response.json();
+    console.log('DeepSeek API response:', data);
+    
+    return {
+      success: true,
+      message: 'DeepSeek API connection successful',
+      details: `Received response with ${data.choices?.length || 0} choices`
+    };
+    
+  } catch (error) {
+    console.error('DeepSeek API test error:', error);
+    return {
+      success: false,
+      message: `Connection error: ${error.message}`,
+      details: error.stack
+    };
+  }
+}
 
 // GraphQL Resolvers
 const resolvers = {
   Query: {
     hello: () => 'Hello from DeepSeek AI Chat!',
+    testDeepSeek: async (parent, args, context) => {
+      return await testDeepSeekAPI(context.env);
+    },
   },
   Mutation: {
     sendMessage: async (parent, { input }, context) => {
       const { message, conversationId } = input;
       
       try {
+        console.log('Processing message:', message);
+        
+        if (!context.env.DEEPSEEK_API_KEY) {
+          throw new Error('DeepSeek API key is not configured');
+        }
+        
         // Call DeepSeek API
         const response = await fetch(`${context.env.DEEPSEEK_API_URL}/v1/chat/completions`, {
           method: 'POST',
@@ -51,14 +133,17 @@ const resolvers = {
           }),
         });
 
+        console.log('DeepSeek API response status:', response.status);
+
         if (!response.ok) {
-          console.error(`DeepSeek API error: ${response.status} ${response.statusText}`);
           const errorText = await response.text();
           console.error('DeepSeek API error details:', errorText);
-          throw new Error(`DeepSeek API error: ${response.status}`);
+          throw new Error(`DeepSeek API error: ${response.status} - ${errorText}`);
         }
 
         const data = await response.json();
+        console.log('DeepSeek API response data:', JSON.stringify(data, null, 2));
+        
         const aiMessage = data.choices[0]?.message?.content || 'Sorry, I could not generate a response.';
 
         return {
@@ -68,10 +153,10 @@ const resolvers = {
           conversationId: conversationId || generateId(),
         };
       } catch (error) {
-        console.error('Error calling DeepSeek API:', error);
+        console.error('Error in sendMessage:', error);
         return {
           id: generateId(),
-          message: 'Sorry, there was an error processing your request.',
+          message: `Error: ${error.message}`,
           timestamp: new Date().toISOString(),
           conversationId: conversationId || generateId(),
         };
@@ -88,6 +173,12 @@ async function executeGraphQL(query, variables, context) {
     // Handle hello query
     if (query.includes('hello') && query.includes('query')) {
       return { hello: resolvers.Query.hello() };
+    }
+    
+    // Handle testDeepSeek query
+    if (query.includes('testDeepSeek') && query.includes('query')) {
+      const result = await resolvers.Query.testDeepSeek(null, {}, context);
+      return { testDeepSeek: result };
     }
     
     // Handle sendMessage mutation
@@ -232,6 +323,31 @@ export default {
       }
     }
 
+    // Test DeepSeek endpoint
+    if (url.pathname === '/test-deepseek') {
+      try {
+        const result = await testDeepSeekAPI(env);
+        return new Response(JSON.stringify(result, null, 2), {
+          headers: {
+            'Content-Type': 'application/json',
+            ...corsHeaders,
+          },
+        });
+      } catch (error) {
+        return new Response(JSON.stringify({
+          success: false,
+          message: error.message,
+          details: error.stack
+        }, null, 2), {
+          status: 500,
+          headers: {
+            'Content-Type': 'application/json',
+            ...corsHeaders,
+          },
+        });
+      }
+    }
+
     // Health check endpoint
     if (url.pathname === '/health') {
       return new Response(JSON.stringify({ 
@@ -239,7 +355,8 @@ export default {
         timestamp: new Date().toISOString(),
         environment: {
           hasDeepSeekUrl: !!env.DEEPSEEK_API_URL,
-          hasApiKey: !!env.DEEPSEEK_API_KEY
+          hasApiKey: !!env.DEEPSEEK_API_KEY,
+          deepSeekUrl: env.DEEPSEEK_API_URL
         }
       }), {
         headers: {
@@ -250,7 +367,7 @@ export default {
     }
 
     // Default response
-    return new Response('DeepSeek AI Chat Worker - Use /graphql endpoint for GraphQL queries', {
+    return new Response('DeepSeek AI Chat Worker - Endpoints: /health, /test-deepseek, /graphql', {
       headers: corsHeaders,
     });
   },
