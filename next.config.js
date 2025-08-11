@@ -6,15 +6,9 @@ const nextConfig = {
   distDir: 'dist', // 输出目录
   images: {
     unoptimized: true // 禁用图片优化以支持静态导出
-  },
-  async rewrites() {
-    return [
-      {
-        source: '/api/graphql',
-        destination: 'https://deepseek-ai-worker.konglin928.workers.dev/graphql', // 替换为你的 Worker URL
-      },
-    ];
-  },
+  }
+  // 移除 rewrites，因为静态导出不支持
+  // 改为在前端直接配置 API 端点
 };
 
 module.exports = nextConfig;
