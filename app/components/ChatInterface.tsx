@@ -127,7 +127,7 @@ export default function ChatInterface() {
             <div className="mt-4 text-xs text-gray-400 space-y-1">
               <p>• **粗体文本** 和 *斜体文本*</p>
               <p>• `代码` 和 ```代码块```</p>
-              <p>• # 标题 和 > 引用</p>
+              <p>• # 标题 和 &gt; 引用</p>
               <p>• 列表、表格、链接等</p>
             </div>
           </div>
