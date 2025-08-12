@@ -123,6 +123,37 @@
   @apply italic text-gray-700 bg-gray-100 px-1 py-0.5 rounded;
 }
 
+/* 增强的链接样式 */
+.markdown-content a {
+  @apply text-blue-600 hover:text-blue-800 font-medium underline decoration-2 underline-offset-2 transition-all duration-200 px-1 py-0.5 rounded;
+}
+
+.markdown-content a:hover {
+  @apply bg-blue-50 shadow-sm;
+}
+
+/* 链接图标样式 */
+.markdown-content a[href^="https://"]::before {
+  content: "🔗 ";
+  @apply text-sm opacity-70;
+}
+
+.markdown-content a[href^="http://"]::before {
+  content: "🔗 ";
+  @apply text-sm opacity-70;
+}
+
+.markdown-content a[href^="mailto:"]::before {
+  content: "📧 ";
+  @apply text-sm opacity-70;
+}
+
+/* 外部链接指示器 */
+.markdown-content a[target="_blank"]::after {
+  content: " ↗";
+  @apply text-xs opacity-60 ml-1;
+}
+
 /* 代码高亮样式 */
 .markdown-content .code-block {
   @apply relative;
