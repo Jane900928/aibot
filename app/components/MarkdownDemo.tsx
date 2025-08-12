@@ -117,7 +117,7 @@ DeepSeek AI 支持 emoji：🚀 ✨ 🤖 💻 📊 🎯
           <li>✅ 行内代码 (`code`) 和代码块 (```)</li>
           <li>✅ 链接 ([text](url)) 和自动链接</li>
           <li>✅ 列表 (有序、无序、任务列表)</li>
-          <li>✅ 引用块 (> text)</li>
+          <li>✅ 引用块 (&gt; text)</li>
           <li>✅ 表格 (| col1 | col2 |)</li>
           <li>✅ 删除线 (~~text~~) 和高亮 (==text==)</li>
           <li>✅ 数学公式 ($formula$ 和 $$block$$)</li>
