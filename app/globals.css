@@ -13,7 +13,7 @@
 }
 
 .user-message {
-  @apply bg-primary-600 text-white ml-auto;
+  @apply bg-blue-600 text-white ml-auto;
 }
 
 .ai-message {
