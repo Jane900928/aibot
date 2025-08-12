@@ -51,7 +51,7 @@
 }
 
 .markdown-content h1 {
-  @apply text-2xl mb-4 mt-6 text-gray-900 border-b-2 border-primary-200 pb-2;
+  @apply text-2xl mb-4 mt-6 text-gray-900 border-b-2 border-blue-200 pb-2;
 }
 
 .markdown-content h2 {
@@ -71,7 +71,7 @@
 }
 
 .markdown-content pre {
-  @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-3 border-l-4 border-primary-500;
+  @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-3 border-l-4 border-blue-500;
 }
 
 .markdown-content pre code {
@@ -91,11 +91,11 @@
 }
 
 .markdown-content blockquote {
-  @apply border-l-4 border-primary-400 pl-4 py-2 my-4 bg-primary-50 italic text-gray-700 rounded-r;
+  @apply border-l-4 border-blue-400 pl-4 py-2 my-4 bg-blue-50 italic text-gray-700 rounded-r;
 }
 
 .markdown-content a {
-  @apply text-primary-600 hover:text-primary-800 underline decoration-2 underline-offset-2 transition-colors;
+  @apply text-blue-600 hover:text-blue-800 underline decoration-2 underline-offset-2 transition-colors;
 }
 
 .markdown-content table {
@@ -116,7 +116,7 @@
 
 /* 特殊效果样式 */
 .markdown-content strong {
-  @apply font-bold text-primary-700 bg-primary-50 px-1 py-0.5 rounded;
+  @apply font-bold text-blue-700 bg-blue-50 px-1 py-0.5 rounded;
 }
 
 .markdown-content em {
