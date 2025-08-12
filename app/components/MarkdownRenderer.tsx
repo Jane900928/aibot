@@ -34,12 +34,12 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
     processedText = processedText.replace(
       /\|(.+)\|\n\|[-\s|:]+\|\n((?:\|.+\|\n?)+)/g,
       (match, header, rows) => {
-        const headerCells = header.split('|').filter(cell => cell.trim()).map(cell => 
+        const headerCells = header.split('|').filter((cell: string) => cell.trim()).map((cell: string) => 
           `<th class="px-3 py-2 text-left font-semibold text-gray-900 bg-gray-50 border border-gray-300">${cell.trim()}</th>`
         ).join('')
         
-        const bodyRows = rows.trim().split('\n').map(row => {
-          const cells = row.split('|').filter(cell => cell.trim()).map(cell => 
+        const bodyRows = rows.trim().split('\n').map((row: string) => {
+          const cells = row.split('|').filter((cell: string) => cell.trim()).map((cell: string) => 
             `<td class="px-3 py-2 text-gray-700 border border-gray-300">${cell.trim()}</td>`
           ).join('')
           return `<tr>${cells}</tr>`
