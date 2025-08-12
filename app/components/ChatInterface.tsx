@@ -107,11 +107,11 @@ export default function ChatInterface() {
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden">
       {/* Header */}
-      <div className="bg-primary-600 text-white p-4 flex justify-between items-center">
+      <div className="bg-blue-600 text-white p-4 flex justify-between items-center">
         <h2 className="text-xl font-semibold">🤖 AI 对话助手</h2>
         <button
           onClick={clearChat}
-          className="px-3 py-1 bg-primary-700 hover:bg-primary-800 rounded text-sm transition-colors duration-200"
+          className="px-3 py-1 bg-blue-700 hover:bg-blue-800 rounded text-sm transition-colors duration-200"
         >
           清空对话
         </button>
@@ -143,7 +143,7 @@ export default function ChatInterface() {
                   <div
                     className={`px-4 py-3 rounded-lg ${
                       message.isUser 
-                        ? 'bg-primary-600 text-white ml-auto' 
+                        ? 'bg-blue-600 text-white ml-auto' 
                         : 'bg-white border border-gray-200 shadow-sm'
                     }`}
                   >
@@ -170,7 +170,7 @@ export default function ChatInterface() {
                 {/* 头像 */}
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
                   message.isUser 
-                    ? 'bg-primary-600 text-white order-2 ml-2' 
+                    ? 'bg-blue-600 text-white order-2 ml-2' 
                     : 'bg-gray-200 text-gray-600 order-1 mr-2'
                 }`}>
                   {message.isUser ? '👤' : '🤖'}
@@ -209,7 +209,7 @@ export default function ChatInterface() {
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="输入您的消息... (支持 Markdown 格式)"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none transition-colors"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition-colors"
               rows={2}
               disabled={isLoading}
             />
@@ -220,7 +220,7 @@ export default function ChatInterface() {
           <button
             onClick={handleSendMessage}
             disabled={!inputValue.trim() || isLoading}
-            className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 self-start"
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 self-start"
           >
             {isLoading ? (
               <div className="flex items-center space-x-1">
