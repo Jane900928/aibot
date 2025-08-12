@@ -17,7 +17,7 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
       /```(\w+)?\n?([\s\S]*?)```/g,
       (match, language, code) => {
         const lang = language || 'text'
-        return `<div class="code-block relative bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-3 border-l-4 border-primary-500" data-lang="${lang}">
+        return `<div class="code-block relative bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-3 border-l-4 border-blue-500" data-lang="${lang}">
           <div class="absolute top-2 right-2 text-xs text-gray-400 bg-gray-800 px-2 py-1 rounded">${lang}</div>
           <pre><code class="text-sm leading-relaxed">${code.trim()}</code></pre>
         </div>`
@@ -57,7 +57,7 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
     // 处理引用块 > text
     processedText = processedText.replace(
       /^> (.*)$/gm,
-      '<blockquote class="border-l-4 border-primary-400 pl-4 py-2 my-3 bg-primary-50 italic text-gray-700 rounded-r">$1</blockquote>'
+      '<blockquote class="border-l-4 border-blue-400 pl-4 py-2 my-3 bg-blue-50 italic text-gray-700 rounded-r">$1</blockquote>'
     )
 
     // 处理标题 ### ## #
@@ -71,17 +71,17 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
     )
     processedText = processedText.replace(
       /^# (.*$)/gm,
-      '<h1 class="text-2xl font-bold mb-4 mt-6 text-gray-900 border-b-2 border-primary-200 pb-2">$1</h1>'
+      '<h1 class="text-2xl font-bold mb-4 mt-6 text-gray-900 border-b-2 border-blue-200 pb-2">$1</h1>'
     )
 
     // 处理粗体 **text** 或 __text__
     processedText = processedText.replace(
       /\*\*(.*?)\*\*/g,
-      '<strong class="font-bold text-primary-700 bg-primary-50 px-1 py-0.5 rounded">$1</strong>'
+      '<strong class="font-bold text-blue-700 bg-blue-50 px-1 py-0.5 rounded">$1</strong>'
     )
     processedText = processedText.replace(
       /__(.*?)__/g,
-      '<strong class="font-bold text-primary-700 bg-primary-50 px-1 py-0.5 rounded">$1</strong>'
+      '<strong class="font-bold text-blue-700 bg-blue-50 px-1 py-0.5 rounded">$1</strong>'
     )
 
     // 处理斜体 *text* 或 _text_ (避免与列表符号冲突)
@@ -93,13 +93,13 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
     // 处理链接 [text](url)
     processedText = processedText.replace(
       /\[([^\]]+)\]\(([^)]+)\)/g,
-      '<a href="$2" class="text-primary-600 hover:text-primary-800 underline decoration-2 underline-offset-2 transition-colors" target="_blank" rel="noopener noreferrer">$1</a>'
+      '<a href="$2" class="text-blue-600 hover:text-blue-800 underline decoration-2 underline-offset-2 transition-colors" target="_blank" rel="noopener noreferrer">$1</a>'
     )
 
     // 处理自动链接 http(s)://...
     processedText = processedText.replace(
       /https?:\/\/[^\s<>"{}|\\^`[\]]+/g,
-      '<a href="$&" class="text-primary-600 hover:text-primary-800 underline decoration-2 underline-offset-2 transition-colors" target="_blank" rel="noopener noreferrer">$&</a>'
+      '<a href="$&" class="text-blue-600 hover:text-blue-800 underline decoration-2 underline-offset-2 transition-colors" target="_blank" rel="noopener noreferrer">$&</a>'
     )
 
     // 处理无序列表 - 或 *
